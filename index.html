@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="UTF-8">
   <title>Vertical Video Player</title>
   <style>
     body, html {
@@ -18,7 +19,7 @@
     }
     video {
       max-width: 80%;
-      max-height: 90%;
+      max-height: 100%;
       object-fit: contain;
       cursor: pointer;
     }
@@ -26,34 +27,58 @@
 </head>
 <body>
   <div class="video-container">
-    <video id="myVideo" src="" autoplay loop muted playsinline webkit-playsinline></video>
+    <video id="myVideo" autoplay muted playsinline webkit-playsinline></video>
   </div>
 
   <script>
-    const video = document.getElementById('myVideo');
-    const videoList = JSON.parse('${VIDEO_LIST}'); // 从环境变量获取
-    let currentVideoIndex = 0;
+    // 加载 videos.json
+    fetch('assets/videos.json')
+      .then(response => response.json())
+      .then(videoList => {
+        const video = document.getElementById('myVideo');
+        let currentVideoIndex = 0;
 
-    // 初始化视频
-    video.src = videoList[0];
-
-    document.addEventListener('keydown', (event) => {
-      if (event.key === 'ArrowUp') {
-        currentVideoIndex = (currentVideoIndex - 1 + videoList.length) % videoList.length;
+        // 初始化视频源
         video.src = videoList[currentVideoIndex];
-        video.load();
-        video.play();
-      } else if (event.key === 'ArrowDown') {
-        currentVideoIndex = (currentVideoIndex + 1) % videoList.length;
-        video.src = videoList[currentVideoIndex];
-        video.load();
-        video.play();
-      }
-    });
 
-    video.addEventListener('click', () => {
-      video.muted = !video.muted;
-    });
+        // 播放下一个视频
+        video.addEventListener('ended', () => {
+          playNextVideo();
+        });
+
+        // 监听键盘上下键切换视频
+        document.addEventListener('keydown', (event) => {
+          if (event.key === 'ArrowUp') {
+            playPreviousVideo();
+          } else if (event.key === 'ArrowDown') {
+            playNextVideo();
+          }
+        });
+
+        // 点击视频切换音量静音
+        video.addEventListener('click', () => {
+          video.muted = !video.muted;
+        });
+
+        // 播放下一个视频
+        function playNextVideo() {
+          currentVideoIndex = (currentVideoIndex + 1) % videoList.length;
+          video.src = videoList[currentVideoIndex];
+          video.load();
+          video.play();
+        }
+
+        // 播放上一个视频
+        function playPreviousVideo() {
+          currentVideoIndex = (currentVideoIndex - 1 + videoList.length) % videoList.length;
+          video.src = videoList[currentVideoIndex];
+          video.load();
+          video.play();
+        }
+      })
+      .catch(error => {
+        console.error('加载视频列表失败:', error);
+      });
   </script>
 </body>
 </html>
