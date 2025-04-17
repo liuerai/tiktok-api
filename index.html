@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Vertical Video Player</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      background-color: black;
+    }
+    .video-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+    }
+    video {
+      max-width: 80%;
+      max-height: 90%;
+      object-fit: contain;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="video-container">
+    <video id="myVideo" src="" autoplay loop muted playsinline webkit-playsinline></video>
+  </div>
+
+  <script>
+    const video = document.getElementById('myVideo');
+    const videoList = JSON.parse('${VIDEO_LIST}'); // 从环境变量获取
+    let currentVideoIndex = 0;
+
+    // 初始化视频
+    video.src = videoList[0];
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowUp') {
+        currentVideoIndex = (currentVideoIndex - 1 + videoList.length) % videoList.length;
+        video.src = videoList[currentVideoIndex];
+        video.load();
+        video.play();
+      } else if (event.key === 'ArrowDown') {
+        currentVideoIndex = (currentVideoIndex + 1) % videoList.length;
+        video.src = videoList[currentVideoIndex];
+        video.load();
+        video.play();
+      }
+    });
+
+    video.addEventListener('click', () => {
+      video.muted = !video.muted;
+    });
+  </script>
+</body>
+</html>
