@@ -24,8 +24,10 @@
     }
     video {
       width: 100%;
+      height: 600px; /* 增加视频高度 */
       border-radius: 8px;
       display: block;
+      object-fit: cover; /* 保持视频比例填充容器 */
     }
     .controls {
       display: flex;
@@ -33,6 +35,7 @@
       align-items: center;
       gap: 10px;
       margin-top: 15px;
+      flex-wrap: wrap;
     }
     .control-btn {
       background-color: rgba(30, 41, 59, 0.7);
@@ -44,6 +47,9 @@
       cursor: pointer;
       transition: all 0.3s ease;
       backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      gap: 5px;
     }
     .control-btn:hover {
       background-color: rgba(51, 65, 85, 0.9);
@@ -60,19 +66,54 @@
       border-radius: 20px;
       margin: 0 5px;
     }
+    .icon {
+      width: 16px;
+      height: 16px;
+    }
   </style>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
 
 <body>
   <div class="video-container">
-    <video id="videoPlayer" autoplay muted></video>
+    <video id="videoPlayer" autoplay></video>
     <div class="controls">
-      <button id="prevButton" class="control-btn" disabled>上一页</button>
+      <button id="prevButton" class="control-btn" disabled>
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+        上一页
+      </button>
       <span id="timeDisplay" class="time-display">00:00/00:00</span>
-      <button id="autoPlayBtn" class="control-btn">自动播放</button>
-      <button id="randomButton" class="control-btn">随机播放</button>
-      <button id="nextButton" class="control-btn" disabled>下一页</button>
+      <button id="muteButton" class="control-btn">
+        <svg id="volumeOnIcon" class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M12 6a7.975 7.975 0 015.657 2.343m0 0a7.975 7.975 0 010 11.314m-11.314 0a7.975 7.975 0 010-11.314m0 0a7.975 7.975 0 015.657-2.343" />
+        </svg>
+        <svg id="volumeOffIcon" class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="display:none;">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" clip-rule="evenodd" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
+        </svg>
+        静音
+      </button>
+      <button id="autoPlayBtn" class="control-btn">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v14a1 1 0 01-1 1H5a1 1 0 01-1-1V5z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8l-4 4 4 4" />
+        </svg>
+        自动播放
+      </button>
+      <button id="randomButton" class="control-btn">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+        </svg>
+        随机播放
+      </button>
+      <button id="nextButton" class="control-btn" disabled>
+        下一页
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
     </div>
   </div>
 
@@ -84,11 +125,15 @@
     const nextButton = document.getElementById('nextButton');
     const randomButton = document.getElementById('randomButton');
     const autoPlayBtn = document.getElementById('autoPlayBtn');
+    const muteButton = document.getElementById('muteButton');
+    const volumeOnIcon = document.getElementById('volumeOnIcon');
+    const volumeOffIcon = document.getElementById('volumeOffIcon');
     const timeDisplay = document.getElementById('timeDisplay');
 
     let videoUrls = [];
     let currentVideoIndex = 0;
     let isAutoPlay = true;
+    let isMuted = false;
 
     function formatTime(seconds) {
       const minutes = Math.floor(seconds / 60);
@@ -108,7 +153,7 @@
         videoUrls = text.split('\n').map(url => url.trim()).filter(url => url.length > 0);
         if (videoUrls.length === 0) throw new Error("获取到的链接列表为空。");
         
-        // 首次加载时随机选择一个视频并自动播放
+        // 首次加载时随机选择一个视频并自动播放（带声音）
         loadVideo(Math.floor(Math.random() * videoUrls.length), true);
       } catch (error) {
         console.error("加载失败:", error);
@@ -121,13 +166,19 @@
         videoPlayer.src = videoUrls[currentVideoIndex];
         videoPlayer.load();
         if (autoplay) {
-          // 自动播放需要视频先静音，这是浏览器的自动播放策略
-          videoPlayer.muted = true;
-          videoPlayer.play().catch(e => {
-            console.warn("自动播放失败:", e);
-            // 如果自动播放失败，显示播放按钮让用户手动点击
-            videoPlayer.muted = false;
-          });
+          videoPlayer.muted = isMuted; // 根据静音状态设置
+          const playPromise = videoPlayer.play();
+          
+          if (playPromise !== undefined) {
+            playPromise.catch(e => {
+              console.warn("自动播放失败:", e);
+              // 如果自动播放失败，尝试静音后播放
+              videoPlayer.muted = true;
+              isMuted = true;
+              updateMuteButton();
+              videoPlayer.play();
+            });
+          }
         }
         updateUI();
       }
@@ -139,6 +190,24 @@
       autoPlayBtn.textContent = isAutoPlay ? "关闭自动" : "自动播放";
     }
 
+    function updateMuteButton() {
+      if (videoPlayer.muted || isMuted) {
+        volumeOnIcon.style.display = "none";
+        volumeOffIcon.style.display = "block";
+        muteButton.innerHTML = '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" clip-rule="evenodd" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" /></svg> 静音';
+      } else {
+        volumeOnIcon.style.display = "block";
+        volumeOffIcon.style.display = "none";
+        muteButton.innerHTML = '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M12 6a7.975 7.975 0 015.657 2.343m0 0a7.975 7.975 0 010 11.314m-11.314 0a7.975 7.975 0 010-11.314m0 0a7.975 7.975 0 015.657-2.343" /></svg> 声音';
+      }
+    }
+
+    // 初始化静音按钮状态
+    videoPlayer.addEventListener('loadedmetadata', () => {
+      updateMuteButton();
+      updateTimeDisplay();
+    });
+
     prevButton.onclick = () => currentVideoIndex > 0 && loadVideo(currentVideoIndex - 1);
     nextButton.onclick = () => currentVideoIndex < videoUrls.length - 1 && loadVideo(currentVideoIndex + 1);
     randomButton.onclick = () => loadVideo(Math.floor(Math.random() * videoUrls.length));
@@ -146,6 +215,12 @@
     autoPlayBtn.onclick = () => {
       isAutoPlay = !isAutoPlay;
       updateUI();
+    };
+
+    muteButton.onclick = () => {
+      isMuted = !videoPlayer.muted;
+      videoPlayer.muted = isMuted;
+      updateMuteButton();
     };
 
     videoPlayer.addEventListener('timeupdate', updateTimeDisplay);
