@@ -10,28 +10,35 @@
     body {
       font-family: 'Inter', sans-serif;
       background-color: #000;
-    }
-    video {
-      width: 100%;
-      height: 100vh;
-      object-fit: contain;
-    }
-    .controls {
-      position: fixed;
-      bottom: 20px;
-      left: 0;
-      right: 0;
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 15px;
-      z-index: 100;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+    .video-container {
+      width: 100%;
+      max-width: 400px;
+      position: relative;
+    }
+    video {
+      width: 100%;
+      border-radius: 8px;
+      display: block;
+    }
+    .controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      margin-top: 15px;
     }
     .control-btn {
       background-color: rgba(30, 41, 59, 0.7);
       color: white;
       border: none;
-      border-radius: 50px;
+      border-radius: 20px;
       padding: 8px 15px;
       font-size: 14px;
       cursor: pointer;
@@ -49,22 +56,24 @@
       color: white;
       font-size: 14px;
       background-color: rgba(0, 0, 0, 0.5);
-      padding: 3px 8px;
-      border-radius: 10px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      margin: 0 5px;
     }
   </style>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
 
 <body>
-  <video id="videoPlayer" autoplay></video>
-
-  <div class="controls">
-    <button id="prevButton" class="control-btn" disabled>上一页</button>
-    <span id="timeDisplay" class="time-display">00:00/00:00</span>
-    <button id="autoPlayBtn" class="control-btn">自动播放</button>
-    <button id="randomButton" class="control-btn">随机播放</button>
-    <button id="nextButton" class="control-btn" disabled>下一页</button>
+  <div class="video-container">
+    <video id="videoPlayer" autoplay muted></video>
+    <div class="controls">
+      <button id="prevButton" class="control-btn" disabled>上一页</button>
+      <span id="timeDisplay" class="time-display">00:00/00:00</span>
+      <button id="autoPlayBtn" class="control-btn">自动播放</button>
+      <button id="randomButton" class="control-btn">随机播放</button>
+      <button id="nextButton" class="control-btn" disabled>下一页</button>
+    </div>
   </div>
 
   <script>
@@ -99,8 +108,8 @@
         videoUrls = text.split('\n').map(url => url.trim()).filter(url => url.length > 0);
         if (videoUrls.length === 0) throw new Error("获取到的链接列表为空。");
         
-        // 首次加载时随机选择一个视频
-        loadVideo(Math.floor(Math.random() * videoUrls.length));
+        // 首次加载时随机选择一个视频并自动播放
+        loadVideo(Math.floor(Math.random() * videoUrls.length), true);
       } catch (error) {
         console.error("加载失败:", error);
       }
@@ -111,7 +120,15 @@
         currentVideoIndex = index;
         videoPlayer.src = videoUrls[currentVideoIndex];
         videoPlayer.load();
-        if (autoplay) videoPlayer.play().catch(console.warn);
+        if (autoplay) {
+          // 自动播放需要视频先静音，这是浏览器的自动播放策略
+          videoPlayer.muted = true;
+          videoPlayer.play().catch(e => {
+            console.warn("自动播放失败:", e);
+            // 如果自动播放失败，显示播放按钮让用户手动点击
+            videoPlayer.muted = false;
+          });
+        }
         updateUI();
       }
     }
@@ -135,11 +152,11 @@
     videoPlayer.addEventListener('loadedmetadata', updateTimeDisplay);
     videoPlayer.addEventListener('ended', () => {
       if (isAutoPlay) {
-        // 结束时也随机选择下一个视频
         loadVideo(Math.floor(Math.random() * videoUrls.length));
       }
     });
 
+    // 页面加载完成后立即开始获取视频列表
     fetchVideoList();
   </script>
 </body>
