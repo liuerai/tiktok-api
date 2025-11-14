@@ -11,6 +11,7 @@
       -webkit-tap-highlight-color: transparent;
       -webkit-touch-callout: none;
     }
+
     body {
       font-family: 'Inter', sans-serif;
       background-color: #000;
@@ -23,6 +24,7 @@
       align-items: center;
       touch-action: pan-y;
     }
+
     .video-container {
       width: 100%;
       max-width: 500px;
@@ -30,6 +32,7 @@
       position: relative;
       overflow: hidden;
     }
+
     video {
       width: 100%;
       height: 100%;
@@ -37,6 +40,7 @@
       object-fit: contain;
       background-color: #000;
     }
+
     .controls {
       position: fixed;
       bottom: env(safe-area-inset-bottom, 15px);
@@ -47,8 +51,9 @@
       align-items: center;
       padding: 10px 15px;
       z-index: 100;
-      background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
     }
+
     .control-btn {
       background-color: rgba(255, 255, 255, 0.2);
       color: white;
@@ -63,10 +68,12 @@
       transition: all 0.2s ease;
       backdrop-filter: blur(10px);
     }
+
     .control-btn:active {
       transform: scale(0.95);
       background-color: rgba(255, 255, 255, 0.3);
     }
+
     .time-display {
       color: white;
       font-size: 14px;
@@ -75,10 +82,12 @@
       border-radius: 20px;
       margin: 0 5px;
     }
+
     .icon {
       width: 22px;
       height: 22px;
     }
+
     .swipe-hint {
       position: absolute;
       color: rgba(255, 255, 255, 0.7);
@@ -91,16 +100,19 @@
       pointer-events: none;
       z-index: 50;
     }
-    .swipe-left {
-      left: 15px;
-      top: 50%;
-      transform: translateY(-50%);
+
+    .swipe-up {
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
     }
-    .swipe-right {
-      right: 15px;
-      top: 50%;
-      transform: translateY(-50%);
+
+    .swipe-down {
+      bottom: 90px;
+      left: 50%;
+      transform: translateX(-50%);
     }
+
     .top-bar {
       position: fixed;
       top: env(safe-area-inset-top, 15px);
@@ -110,18 +122,21 @@
       z-index: 100;
       display: flex;
       justify-content: space-between;
-      background: linear-gradient(to bottom, rgba(0,0,0,0.7), transparent);
+      background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), transparent);
     }
+
     .title {
       color: white;
       font-size: 16px;
       font-weight: 500;
     }
+
     @media (min-width: 768px) {
       .video-container {
         height: 90vh;
         border-radius: 12px;
       }
+
       video {
         border-radius: 12px;
       }
@@ -132,30 +147,36 @@
 
 <body>
   <div class="video-container" id="videoContainer">
-    <div class="swipe-hint swipe-left">上一页</div>
-    <div class="swipe-hint swipe-right">下一页</div>
-    
+    <!-- 上下滑动提示 -->
+    <div class="swipe-hint swipe-up">上滑：下一条</div>
+    <div class="swipe-hint swipe-down">下滑：上一条</div>
+
     <div class="top-bar">
       <div class="title">视频播放器</div>
       <span id="timeDisplay" class="time-display">00:00/00:00</span>
     </div>
-    
+
     <video id="videoPlayer" autoplay playsinline webkit-playsinline x5-playsinline></video>
-    
+
     <div class="controls">
       <button id="muteButton" class="control-btn">
         <svg id="volumeOnIcon" class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M12 6a7.975 7.975 0 015.657 2.343m0 0a7.975 7.975 0 010 11.314m-11.314 0a7.975 7.975 0 010-11.314m0 0a7.975 7.975 0 015.657-2.343" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M15.536 8.464a5 5 0 010 7.072M12 6a7.975 7.975 0 015.657 2.343m0 0a7.975 7.975 0 010 11.314m-11.314 0a7.975 7.975 0 010-11.314m0 0a7.975 7.975 0 015.657-2.343" />
         </svg>
         <svg id="volumeOffIcon" class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="display:none;">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" clip-rule="evenodd" />
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"
+            clip-rule="evenodd" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
         </svg>
       </button>
-      
+
       <button id="randomButton" class="control-btn">
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
         </svg>
       </button>
     </div>
@@ -171,19 +192,22 @@
     const volumeOffIcon = document.getElementById('volumeOffIcon');
     const randomButton = document.getElementById('randomButton');
     const timeDisplay = document.getElementById('timeDisplay');
-    const swipeLeftHint = document.querySelector('.swipe-left');
-    const swipeRightHint = document.querySelector('.swipe-right');
+    const swipeUpHint = document.querySelector('.swipe-up');
+    const swipeDownHint = document.querySelector('.swipe-down');
 
     let videoUrls = [];
     let currentVideoIndex = 0;
     let isMuted = false;
-    let touchStartX = 0;
-    let touchEndX = 0;
-    const SWIPE_THRESHOLD = 50; // 滑动阈值(像素)
+
+    // 垂直滑动参数
+    let startY = 0;
+    let endY = 0;
+    const SWIPE_THRESHOLD = 50; // 垂直滑动阈值(像素)
 
     function formatTime(seconds) {
-      const minutes = Math.floor(seconds / 60);
-      const remainingSeconds = Math.floor(seconds % 60);
+      const s = isNaN(seconds) || !isFinite(seconds) ? 0 : seconds;
+      const minutes = Math.floor(s / 60);
+      const remainingSeconds = Math.floor(s % 60);
       return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
     }
 
@@ -198,7 +222,7 @@
         const text = await response.text();
         videoUrls = text.split('\n').map(url => url.trim()).filter(url => url.length > 0);
         if (videoUrls.length === 0) throw new Error("获取到的链接列表为空。");
-        
+
         // 首次加载时随机选择一个视频并自动播放（带声音）
         loadVideo(Math.floor(Math.random() * videoUrls.length), true);
       } catch (error) {
@@ -215,7 +239,7 @@
         if (autoplay) {
           videoPlayer.muted = isMuted;
           const playPromise = videoPlayer.play();
-          
+
           if (playPromise !== undefined) {
             playPromise.catch(e => {
               console.warn("自动播放失败:", e);
@@ -231,7 +255,8 @@
     }
 
     function showSwipeHint(direction) {
-      const hint = direction === 'left' ? swipeLeftHint : swipeRightHint;
+      const hint = direction === 'up' ? swipeUpHint : swipeDownHint;
+      if (!hint) return;
       hint.style.opacity = '1';
       setTimeout(() => {
         hint.style.opacity = '0';
@@ -248,56 +273,72 @@
       }
     }
 
-    // 触摸事件处理
+    // 触摸事件处理（上下滑动）
     videoContainer.addEventListener('touchstart', (e) => {
-      touchStartX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
     }, { passive: true });
 
     videoContainer.addEventListener('touchmove', (e) => {
-      e.preventDefault(); // 防止页面滚动
+      // 防止页面滚动，兼容安卓全屏
+      e.preventDefault();
     }, { passive: false });
 
     videoContainer.addEventListener('touchend', (e) => {
-      touchEndX = e.changedTouches[0].clientX;
-      handleSwipe();
+      endY = e.changedTouches[0].clientY;
+      handleVerticalSwipe();
     }, { passive: true });
 
-    // 鼠标事件处理（桌面端）
+    // 鼠标事件处理（桌面端，上下拖动）
     let isMouseDown = false;
     videoContainer.addEventListener('mousedown', (e) => {
       isMouseDown = true;
-      touchStartX = e.clientX;
+      startY = e.clientY;
     });
 
     document.addEventListener('mousemove', (e) => {
       if (isMouseDown) {
-        touchEndX = e.clientX;
+        endY = e.clientY;
       }
     });
 
     document.addEventListener('mouseup', (e) => {
       if (isMouseDown) {
-        touchEndX = e.clientX;
-        handleSwipe();
+        endY = e.clientY;
+        handleVerticalSwipe();
         isMouseDown = false;
       }
     });
 
-    function handleSwipe() {
-      const diffX = touchEndX - touchStartX;
-      
-      if (diffX > SWIPE_THRESHOLD && currentVideoIndex > 0) {
-        // 向右滑动 - 上一页
-        showSwipeHint('left');
+    function handleVerticalSwipe() {
+      const diffY = endY - startY;
+
+      if (diffY > SWIPE_THRESHOLD && currentVideoIndex > 0) {
+        // 下滑 - 上一个视频
+        showSwipeHint('down');
         loadVideo(currentVideoIndex - 1);
-      } else if (diffX < -SWIPE_THRESHOLD && currentVideoIndex < videoUrls.length - 1) {
-        // 向左滑动 - 下一页
-        showSwipeHint('right');
+      } else if (diffY < -SWIPE_THRESHOLD && currentVideoIndex < videoUrls.length - 1) {
+        // 上滑 - 下一个视频
+        showSwipeHint('up');
         loadVideo(currentVideoIndex + 1);
       }
     }
 
-    // 初始化静音按钮状态
+    // 键盘上下键切换视频（桌面端）
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowUp') {
+        if (currentVideoIndex > 0) {
+          showSwipeHint('down');
+          loadVideo(currentVideoIndex - 1);
+        }
+      } else if (e.key === 'ArrowDown') {
+        if (currentVideoIndex < videoUrls.length - 1) {
+          showSwipeHint('up');
+          loadVideo(currentVideoIndex + 1);
+        }
+      }
+    });
+
+    // 初始化静音按钮状态与时间显示
     videoPlayer.addEventListener('loadedmetadata', () => {
       updateMuteButton();
       updateTimeDisplay();
@@ -319,19 +360,31 @@
       loadVideo(Math.floor(Math.random() * videoUrls.length));
     });
 
-    // 处理iOS全屏播放
+    // iOS 全屏播放处理
     videoPlayer.addEventListener('webkitbeginfullscreen', () => {
       document.body.style.overflow = 'hidden';
     });
-    
+
     videoPlayer.addEventListener('webkitendfullscreen', () => {
       document.body.style.overflow = '';
     });
 
+    // 安卓 / 通用全屏事件，处理 touch-action
+    function fixFullscreenTouch() {
+      const isFull = document.fullscreenElement || document.webkitFullscreenElement;
+      if (isFull) {
+        videoContainer.style.touchAction = 'none';
+      } else {
+        videoContainer.style.touchAction = 'auto';
+      }
+    }
+
+    document.addEventListener('fullscreenchange', fixFullscreenTouch);
+    document.addEventListener('webkitfullscreenchange', fixFullscreenTouch);
+
     // 页面加载完成后立即开始获取视频列表
     fetchVideoList();
   </script>
-  <script defer src="https://um.biuxin.com/script.js" data-website-id="a4901e47-c48f-4233-8361-defa5945697b"></script>
 </body>
 
 </html>
